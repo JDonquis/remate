@@ -273,6 +273,9 @@ class AuctionController extends Controller
     /**
      * Generate tickets for all gamblers in the auction.
      */
+    /**
+     * Generate tickets for all gamblers in the auction.
+     */
     public function printAllTickets(Request $request, Auction $auction)
     {
         Log::info('Iniciando generación de todos los tickets para auction: ' . $auction->id);
@@ -283,6 +286,7 @@ class AuctionController extends Controller
         Log::info('Datos del auction:', $auctionData);
 
         $allGamblersTickets = [];
+        $gamblersSummary = []; // Nuevo array para el resumen
 
         // Recolectar todos los apostadores únicos
         $gamblers = [];
@@ -393,14 +397,26 @@ class AuctionController extends Controller
                 'potentialAdditionalPot' => $potentialAdditionalPot,
                 'horseWithAllTabs' => $horseWithAllTabs
             ];
+
+            // Agregar al resumen de apostadores
+            $gamblersSummary[] = [
+                'person' => $gamblerName,
+                'totalBet' => $totalBet
+            ];
         }
+
+        // Ordenar el resumen por monto apostado (de mayor a menor)
+        usort($gamblersSummary, function ($a, $b) {
+            return $b['totalBet'] <=> $a['totalBet'];
+        });
 
         Log::info('Tickets generados:', ['count' => count($allGamblersTickets)]);
 
         try {
             $pdf = Pdf::loadView('pdf.all-tickets', [
                 'auction' => $auction,
-                'tickets' => $allGamblersTickets
+                'tickets' => $allGamblersTickets,
+                'gamblersSummary' => $gamblersSummary // Pasar el resumen a la vista
             ])->setPaper('A4', 'portrait');
 
             Log::info('PDF generado exitosamente');
@@ -435,5 +451,37 @@ class AuctionController extends Controller
         Auction::where('status', 1)->update(['status' => 0]);
         Gambler::query()->delete();
         return back();
+    }
+
+    public function generateReport()
+    {
+        // Obtener todos los auctions activos
+        $activeAuctions = Auction::where('status', 1)->get();
+
+        // Calcular totales
+        $totalEarningsToHome = $activeAuctions->sum('earnings_to_home');
+        $totalEarningsToWinner = $activeAuctions->sum('earnings_to_winner');
+        $totalAdditionalPot = $activeAuctions->sum('additional_pot');
+        $totalGeneral = $activeAuctions->sum('total');
+
+        // Calcular earnings_to_winner con additional_pot incluido
+        $totalEarningsToWinnerWithPot = $totalEarningsToWinner + $totalAdditionalPot;
+
+        $reportData = [
+            'total_auctions' => $activeAuctions->count(),
+            'total_earnings_to_home' => $totalEarningsToHome,
+            'total_earnings_to_winner' => $totalEarningsToWinner,
+            'total_additional_pot' => $totalAdditionalPot,
+            'total_earnings_to_winner_with_pot' => $totalEarningsToWinnerWithPot,
+            'total_general' => $totalGeneral,
+            'auctions' => $activeAuctions,
+            'report_date' => now()->format('d/m/Y H:i:s')
+        ];
+
+        $pdf = Pdf::loadView('pdf.report', $reportData)
+            ->setPaper('A4', 'portrait')
+            ->setOptions(['defaultFont' => 'sans-serif']);
+
+        return $pdf->stream("reporte-remates-" . now()->format('Y-m-d') . ".pdf");
     }
 }

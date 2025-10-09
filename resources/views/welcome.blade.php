@@ -346,6 +346,9 @@
         <div>
             <a href="{{ route('auctions.create') }}" class="create-button">Crear Remate</a>
             <a href="{{ route('auctions.reset') }}" class="close-auction-button">Cerrar remates</a>
+            <a href="{{ route('auctions.report') }}" target="_blank" class="create-button"
+                style="background-color: #28a745;">Generar
+                Reporte</a>
 
         </div>
     </header>

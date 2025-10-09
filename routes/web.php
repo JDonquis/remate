@@ -17,3 +17,4 @@ Route::post('/auction/{auction}/print-tab', [AuctionController::class, 'printTab
 Route::post('/auction/{auction}/print-all', [AuctionController::class, 'printAll'])->name('auctions.print.all');
 Route::post('/auction/{auction}/generate-ticket', [AuctionController::class, 'generateTicket'])->name('auctions.generate-ticket');
 Route::post('/auction/{auction}/print-all-tickets', [AuctionController::class, 'printAllTickets'])->name('auctions.print-all-tickets');
+Route::get('/auctions/report', [AuctionController::class, 'generateReport'])->name('auctions.report');

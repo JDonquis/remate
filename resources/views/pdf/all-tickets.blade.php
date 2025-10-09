@@ -21,6 +21,13 @@
             page-break-after: avoid;
         }
 
+        .summary-page {
+            border: 2px solid #000;
+            padding: 20px;
+            margin: 10px;
+            page-break-after: always;
+        }
+
         .header {
             text-align: center;
             font-weight: bold;
@@ -87,6 +94,49 @@
         .breakdown {
             font-size: 9px;
             color: #666;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 12px;
+        }
+
+        .summary-table th,
+        .summary-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .summary-table th {
+            background-color: #424b98;
+            color: white;
+            font-weight: bold;
+        }
+
+        .summary-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .summary-total {
+            font-weight: bold;
+            background-color: #e0c91b;
+            color: #000;
+        }
+
+        .summary-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #424b98;
+        }
+
+        .summary-info {
+            margin: 10px 0;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -185,6 +235,51 @@
                 </div>
             </div>
         @endforeach
+
+        <!-- Hoja de resumen de apostadores -->
+        <div class="summary-page">
+            <div class="header">REMATE HERMANOS GARCIA</div>
+            <div class="header">{{ $auction->name }}</div>
+
+            <div class="summary-title">RESUMEN DE APOSTADORES</div>
+
+            <div class="summary-info">
+                <strong>Fecha:</strong> {{ now()->format('d/m/Y H:i') }}<br>
+                <strong>Total de Apostadores:</strong> {{ count($gamblersSummary) }}<br>
+                <strong>Total General Apostado:</strong>
+                VES.{{ number_format(array_sum(array_column($gamblersSummary, 'totalBet')), 2) }}
+            </div>
+
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Apostador</th>
+                        <th>Monto Apostado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($gamblersSummary as $index => $gambler)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $gambler['person'] }}</td>
+                            <td>VES.{{ number_format($gambler['totalBet'], 2) }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+                <tfoot>
+                    <tr class="summary-total">
+                        <td colspan="2"><strong>TOTAL GENERAL</strong></td>
+                        <td><strong>VES.{{ number_format(array_sum(array_column($gamblersSummary, 'totalBet')), 2) }}</strong>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <div class="footer">
+                Resumen generado el {{ now()->format('d/m/Y H:i') }}
+            </div>
+        </div>
     @endif
 </body>
 
