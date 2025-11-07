@@ -90,7 +90,7 @@
 
         .main-content {
             width: 100%;
-            max-width: 1600px;
+            max-width: 24000px;
             margin: 0 auto;
             flex-grow: 1;
         }
@@ -325,9 +325,50 @@
             background-color: rgba(224, 201, 27, 0.1);
         }
 
+        .horse-number-cell {
+            width: 40px;
+            text-align: center;
+            font-weight: 700;
+            color: #D35400;
+            /* Naranja oscuro */
+            font-size: 1.2rem;
+        }
+
+        .dark .horse-number-cell {
+            color: #E67E22;
+            /* Naranja más claro para modo oscuro */
+        }
+
         .horse-name-cell {
-            font-weight: 600;
+            font-weight: 700;
             min-width: 150px;
+        }
+
+        .horse-name-input {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #D35400;
+            /* Naranja oscuro */
+            border: 2px solid #E67E22;
+            background-color: #FFF9F2;
+            /* Fondo muy claro naranja */
+        }
+
+        .horse-name-input:focus {
+            border-color: #D35400;
+            background-color: #FFF5E6;
+            box-shadow: 0 0 0 3px rgba(211, 84, 0, 0.1);
+        }
+
+        .dark .horse-name-input {
+            color: #E67E22;
+            background-color: #2D1B06;
+            border-color: #F39C12;
+        }
+
+        .dark .horse-name-input:focus {
+            background-color: #3E2408;
+            border-color: #E67E22;
         }
 
         .tab-column {
@@ -339,6 +380,7 @@
             text-align: center;
             font-weight: 600;
             background-color: #f0f0f0;
+            font-size: 1.1rem;
         }
 
         .dark .tab-header-cell {
@@ -347,10 +389,10 @@
 
         .bet-input {
             width: 95%;
-            padding: 6px 8px;
+            padding: 8px 10px;
             border: 1px solid #e3e3e0;
             border-radius: 4px;
-            font-size: 0.9rem;
+            font-size: 1.2rem;
             transition: all 0.2s ease;
             background-color: #fafafa;
             font-family: 'Instrument Sans', sans-serif;
@@ -375,8 +417,57 @@
             box-shadow: 0 0 0 2px rgba(224, 201, 27, 0.1);
         }
 
+        .bet-person {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #D35400;
+            /* Naranja oscuro */
+            background-color: #FFF9F2;
+            border: 2px solid #E67E22;
+        }
+
+        .bet-person:focus {
+            border-color: #D35400;
+            background-color: #FFF5E6;
+            box-shadow: 0 0 0 3px rgba(211, 84, 0, 0.1);
+        }
+
+        .dark .bet-person {
+            color: #E67E22;
+            background-color: #2D1B06;
+            border-color: #F39C12;
+        }
+
+        .dark .bet-person:focus {
+            background-color: #3E2408;
+            border-color: #E67E22;
+        }
+
         .bet-amount-input {
             width: 80px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #D35400;
+            /* Naranja oscuro */
+            background-color: #FFF9F2;
+            border: 2px solid #E67E22;
+        }
+
+        .bet-amount-input:focus {
+            border-color: #D35400;
+            background-color: #FFF5E6;
+            box-shadow: 0 0 0 3px rgba(211, 84, 0, 0.1);
+        }
+
+        .dark .bet-amount-input {
+            color: #E67E22;
+            background-color: #2D1B06;
+            border-color: #F39C12;
+        }
+
+        .dark .bet-amount-input:focus {
+            background-color: #3E2408;
+            border-color: #E67E22;
         }
 
         .winner-checkbox {
@@ -742,6 +833,7 @@
                 <table class="bets-table">
                     <thead>
                         <tr>
+                            <th class="horse-number-cell">#</th>
                             <th class="horse-name-cell">Caballo</th>
                             <th class="tab-column tab-header-cell">Tab 1</th>
                             <th class="tab-column tab-header-cell">Tab 2</th>
@@ -874,7 +966,7 @@
     <script>
         // Nueva estructura de datos simplificada
         let auctionData = {
-            caballos: [], // Array de objetos {id, nombre, tab1: {apostador, monto}, tab2: {...}, ...}
+            caballos: [], // Array de objetos {id, numero, nombre, tab1: {apostador, monto}, tab2: {...}, ...}
             earnings: {
                 total_bet: 0,
                 total_house: 0,
@@ -922,6 +1014,20 @@
             }
         }
 
+        // Función para obtener el siguiente número disponible (siempre el más alto + 1)
+        function getNextHorseNumber() {
+            if (auctionData.caballos.length === 0) {
+                return 1;
+            }
+
+            // Obtener todos los números de caballo existentes
+            const existingNumbers = auctionData.caballos.map(horse => horse.numero);
+
+            // Encontrar el número más alto y sumar 1
+            const maxNumber = Math.max(...existingNumbers);
+            return maxNumber + 1;
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const updateTabButton = document.getElementById('update-tab-button');
             const addHorseButton = document.getElementById('add-horse-button');
@@ -965,8 +1071,9 @@
             const row = document.createElement('tr');
             row.dataset.horseId = horse.id;
             row.innerHTML = `
+                <td class="horse-number-cell">${horse.numero}</td>
                 <td class="horse-name-cell">
-                    <input type="text" class="bet-input horse-name" value="${horse.nombre}" placeholder="Nombre del caballo" data-horse-id="${horse.id}">
+                    <input type="text" class="bet-input horse-name-input" value="${horse.nombre}" placeholder="Caballo" data-horse-id="${horse.id}">
                 </td>
                 <td class="tab-column">
                     <input type="text" class="bet-input bet-person" value="${horse.tab1.apostador}" placeholder="Apostador" data-tab="1" data-horse-id="${horse.id}">
@@ -1068,7 +1175,7 @@
             tableBody.appendChild(row);
 
             // Añadir event listeners
-            const horseNameInput = row.querySelector('.horse-name');
+            const horseNameInput = row.querySelector('.horse-name-input');
             horseNameInput.addEventListener('input', function() {
                 updateHorseName(this.dataset.horseId, this.value);
             });
@@ -1116,6 +1223,7 @@
             const newId = auctionData.caballos.length > 0 ? Math.max(...auctionData.caballos.map(h => h.id)) + 1 : 1;
             const newHorse = {
                 id: newId,
+                numero: getNextHorseNumber(), // Asignar número automáticamente
                 nombre: '',
                 tab1: {
                     apostador: '',
@@ -1224,6 +1332,7 @@
 
         function deleteHorse(horseId) {
             if (confirm('¿Estás seguro de que quieres eliminar este caballo y todas sus apuestas?')) {
+                // Eliminar el caballo sin reordenar los números
                 auctionData.caballos = auctionData.caballos.filter(h => h.id != horseId);
                 loadTableContent();
                 hasChanges = true;

@@ -13,19 +13,19 @@
         .ticket {
             border: 2px solid #000;
             padding: 15px;
-            margin: 10px;
-            page-break-after: always;
+            margin: 10px 0;
+            page-break-inside: avoid;
         }
 
-        .ticket:last-child {
-            page-break-after: avoid;
+        .ticket:not(:last-child) {
+            page-break-after: always;
         }
 
         .summary-page {
             border: 2px solid #000;
             padding: 20px;
-            margin: 10px;
-            page-break-after: always;
+            margin: 10px 0;
+            page-break-before: always;
         }
 
         .header {
@@ -45,6 +45,7 @@
             padding: 8px;
             margin: 8px 0;
             font-size: 11px;
+            page-break-inside: avoid;
         }
 
         .winner {
@@ -60,6 +61,7 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 10px;
+            page-break-inside: avoid;
         }
 
         th,
@@ -101,6 +103,7 @@
             border-collapse: collapse;
             margin-top: 15px;
             font-size: 12px;
+            page-break-inside: avoid;
         }
 
         .summary-table th,
@@ -138,6 +141,22 @@
             margin: 10px 0;
             font-size: 14px;
         }
+
+        /* Optimización para evitar páginas en blanco */
+        .ticket-content {
+            page-break-inside: avoid;
+        }
+
+        /* Asegurar que los tickets no se dividan en páginas */
+        .ticket {
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+
+        /* Solo forzar salto de página después del último ticket */
+        .ticket:last-of-type {
+            page-break-after: avoid;
+        }
     </style>
 </head>
 
@@ -153,85 +172,86 @@
     @else
         @foreach ($tickets as $index => $ticket)
             <div class="ticket">
-                <div class="header">REMATE HERMANOS GARCIA</div>
-                <div class="header">{{ $auction->name }}</div>
+                <div class="ticket-content">
+                    <div class="header">REMATE HERMANOS GARCIA</div>
+                    <div class="header">{{ $auction->name }}</div>
 
-                <div class="info">
-                    <strong>Apostador:</strong> {{ $ticket['person'] }}<br>
-                    <strong>Fecha:</strong> {{ now()->format('d/m/Y H:i') }}<br>
-                    <strong>Ticket #{{ $index + 1 }} de {{ count($tickets) }}</strong>
-                </div>
-
-                @if (empty($ticket['betsByHorse']))
-                    <div class="info" style="text-align: center;">
-                        <strong>No hay apuestas registradas</strong>
+                    <div class="info">
+                        <strong>Apostador:</strong> {{ $ticket['person'] }}<br>
+                        <strong>Fecha:</strong> {{ now()->format('d/m/Y H:i') }}<br>
+                        <strong>Ticket #{{ $index + 1 }} de {{ count($tickets) }}</strong>
                     </div>
-                @else
-                    @foreach ($ticket['betsByHorse'] as $horse)
-                        <div
-                            class="horse-section {{ $horse['is_winner'] ? 'winner' : '' }} {{ $horse['has_all_tabs'] ? 'all-tabs-horse' : '' }}">
-                            <h4 style="margin: 0 0 5px 0;">
-                                {{ $horse['horse_name'] }}
-                                @if ($horse['is_winner'])
-                                    <span style="color: #28a745;">🏆 GANADOR</span>
-                                @endif
 
-                            </h4>
-
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Tab</th>
-                                        <th>Monto Apostado</th>
-                                        <th>Ganancia Potencial</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($horse['bets'] as $bet)
-                                        <tr>
-                                            <td>Tab {{ $bet['tab'] }}</td>
-                                            <td>VES.{{ number_format($bet['amount'], 2) }}</td>
-                                            <td>VES.{{ number_format($bet['potential_earnings'], 2) }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                                <tfoot>
-                                    <tr class="total">
-                                        <td>Total {{ $horse['horse_name'] }}:</td>
-                                        <td>VES.{{ number_format($horse['total_bet'], 2) }}</td>
-                                        <td>
-                                            @if (isset($horse['additional_pot']) && $horse['additional_pot'] > 0)
-                                                <div>
-                                                    <div class="breakdown">
-                                                        Ganancia:
-                                                        VES.{{ number_format($horse['potential_earnings'] - $horse['additional_pot'], 2) }}
-                                                    </div>
-                                                    <div class="pote-info">
-                                                        + Bono 5 Tablas:
-                                                        VES.{{ number_format($horse['additional_pot'], 2) }}
-                                                    </div>
-                                                    <div>
-                                                        <strong>Total:
-                                                            VES.{{ number_format($horse['potential_earnings'], 2) }}</strong>
-                                                    </div>
-                                                </div>
-                                            @else
-                                                VES.{{ number_format($horse['potential_earnings'], 2) }}
-                                            @endif
-                                        </td>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                    @if (empty($ticket['betsByHorse']))
+                        <div class="info" style="text-align: center;">
+                            <strong>No hay apuestas registradas</strong>
                         </div>
-                    @endforeach
-                @endif
+                    @else
+                        @foreach ($ticket['betsByHorse'] as $horse)
+                            <div
+                                class="horse-section {{ $horse['is_winner'] ? 'winner' : '' }} {{ $horse['has_all_tabs'] ? 'all-tabs-horse' : '' }}">
+                                <h4 style="margin: 0 0 5px 0;">
+                                    {{ $horse['horse_name'] }}
+                                    @if ($horse['is_winner'])
+                                        <span style="color: #28a745;">🏆 GANADOR</span>
+                                    @endif
+                                </h4>
 
-                <div class="info total" style="border-top: 2px solid #000; padding-top: 8px;">
-                    <strong>Total Apostado:</strong> VES.{{ number_format($ticket['totalBet'], 2) }}<br>
-                </div>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Tab</th>
+                                            <th>Monto Apostado</th>
+                                            <th>Ganancia Potencial</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($horse['bets'] as $bet)
+                                            <tr>
+                                                <td>Tab {{ $bet['tab'] }}</td>
+                                                <td>VES.{{ number_format($bet['amount'], 2) }}</td>
+                                                <td>VES.{{ number_format($bet['potential_earnings'], 2) }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="total">
+                                            <td>Total {{ $horse['horse_name'] }}:</td>
+                                            <td>VES.{{ number_format($horse['total_bet'], 2) }}</td>
+                                            <td>
+                                                @if (isset($horse['additional_pot']) && $horse['additional_pot'] > 0)
+                                                    <div>
+                                                        <div class="breakdown">
+                                                            Ganancia:
+                                                            VES.{{ number_format($horse['potential_earnings'] - $horse['additional_pot'], 2) }}
+                                                        </div>
+                                                        <div class="pote-info">
+                                                            + Bono 5 Tablas:
+                                                            VES.{{ number_format($horse['additional_pot'], 2) }}
+                                                        </div>
+                                                        <div>
+                                                            <strong>Total:
+                                                                VES.{{ number_format($horse['potential_earnings'], 2) }}</strong>
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    VES.{{ number_format($horse['potential_earnings'], 2) }}
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        @endforeach
+                    @endif
 
-                <div class="footer">
-                    Generado el {{ now()->format('d/m/Y H:i') }}
+                    <div class="info total" style="border-top: 2px solid #000; padding-top: 8px;">
+                        <strong>Total Apostado:</strong> VES.{{ number_format($ticket['totalBet'], 2) }}<br>
+                    </div>
+
+                    <div class="footer">
+                        Generado el {{ now()->format('d/m/Y H:i') }}
+                    </div>
                 </div>
             </div>
         @endforeach
