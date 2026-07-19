@@ -122,7 +122,7 @@
 
 <body>
     <div class="header">
-        <h1>REPORTE DE REMATES - HERMANOS GARCIA</h1>
+        <h1>REPORTE DE REMATES - BODEGON MEDANOS</h1>
         <div class="subtitle">Generado el: {{ $report_date }}</div>
     </div>
 

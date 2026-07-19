@@ -28,7 +28,7 @@
 
 <body>
     <div class="message">
-        <div class="header">REMATE HERMANOS GARCIA</div>
+        <div class="header">REMATE BODEGON MEDANOS</div>
         <div class="header">{{ $auction->name }}</div>
         <p><strong>No hay tickets para generar</strong></p>
         <p>No se encontraron apuestas registradas en este remate.</p>

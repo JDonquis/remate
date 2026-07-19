@@ -163,7 +163,7 @@
 <body>
     @if (empty($tickets))
         <div class="ticket">
-            <div class="header">REMATE HERMANOS GARCIA</div>
+            <div class="header">REMATE BODEGON MEDANOS</div>
             <div class="header">{{ $auction->name }}</div>
             <div class="info" style="text-align: center;">
                 <strong>No hay tickets para mostrar</strong>
@@ -173,7 +173,7 @@
         @foreach ($tickets as $index => $ticket)
             <div class="ticket">
                 <div class="ticket-content">
-                    <div class="header">REMATE HERMANOS GARCIA</div>
+                    <div class="header">REMATE BODEGON MEDANOS</div>
                     <div class="header">{{ $auction->name }}</div>
 
                     <div class="info">
@@ -258,7 +258,7 @@
 
         <!-- Hoja de resumen de apostadores -->
         <div class="summary-page">
-            <div class="header">REMATE HERMANOS GARCIA</div>
+            <div class="header">REMATE BODEGON MEDANOS</div>
             <div class="header">{{ $auction->name }}</div>
 
             <div class="summary-title">RESUMEN DE APOSTADORES</div>

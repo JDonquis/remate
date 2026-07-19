@@ -341,7 +341,7 @@
         <div class="logo-container">
             <!-- Placeholder Logo SVG -->
             <div class="logo"></div>
-            <span class="store-name">REMATE HERMANOS GARCIA</span>
+            <span class="store-name">REMATE BODEGON MEDANOS</span>
         </div>
         <div>
             <a href="{{ route('auctions.create') }}" class="create-button">Crear Remate</a>

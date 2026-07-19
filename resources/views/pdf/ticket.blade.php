@@ -88,7 +88,7 @@
 
 <body>
     <div class="ticket">
-        <div class="header">REMATE HERMANOS GARCIA</div>
+        <div class="header">REMATE BODEGON MEDANOS</div>
         <div class="header">{{ $auction->name }}</div>
 
         <div class="info">

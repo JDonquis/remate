@@ -201,7 +201,7 @@
     <header class="header">
         <div class="logo-container">
             <div class="logo"></div>
-            <span class="store-name">REMATE HERMANOS GARCIA</span>
+            <span class="store-name">REMATE BODEGON MEDANOS</span>
         </div>
         <div>
             <a href="{{ route('auctions.index') }}" class="create-button">Volver al Listado</a>
